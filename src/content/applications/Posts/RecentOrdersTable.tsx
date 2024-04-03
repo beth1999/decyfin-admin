@@ -2,7 +2,6 @@
 import { FC, ChangeEvent, useState } from 'react';
 import { format } from 'date-fns';
 import {
-  Tooltip,
   Divider,
   Box,
   FormControl,
@@ -22,7 +21,8 @@ import {
   Typography,
   useTheme,
   CardHeader,
-  SelectChangeEvent
+  SelectChangeEvent,
+  Tooltip
 } from '@mui/material';
 
 import Label from '@/components/Label';
@@ -34,7 +34,7 @@ type CryptoOrderStatus = 'all' | 'visible' | 'invisible';
 
 interface RecentOrdersTableProps {
   className?: string;
-  cryptoOrders: CryptoOrder[];
+  posts: PostProps[];
 }
 
 interface Filters {
@@ -75,14 +75,14 @@ const getStatusLabel = (cryptoOrderStatus: CryptoOrderStatus): JSX.Element => {
   return <Label color={color}>{text}</Label>;
 };
 
-const applyFilters = (
-  cryptoOrders: CryptoOrder[],
-  filters: Filters
-): CryptoOrder[] => {
-  return cryptoOrders.filter((cryptoOrder) => {
+const applyFilters = (posts: PostProps[], filters: Filters): PostProps[] => {
+  return posts.filter((post: PostProps) => {
     let matches = true;
 
-    if (filters.status !== 'all' && cryptoOrder.status !== filters.status) {
+    if (
+      filters.status !== 'all' &&
+      (post.status ? 'visible' : 'invisible') !== filters.status
+    ) {
       matches = false;
     }
 
@@ -91,14 +91,14 @@ const applyFilters = (
 };
 
 const applyPagination = (
-  cryptoOrders: CryptoOrder[],
+  cryptoOrders: PostProps[],
   page: number,
   limit: number
-): CryptoOrder[] => {
+): PostProps[] => {
   return cryptoOrders.slice(page * limit, page * limit + limit);
 };
 
-const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
+const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ posts }) => {
   const [selectedCryptoOrders, setSelectedCryptoOrders] = useState<string[]>(
     []
   );
@@ -136,9 +136,7 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
     event: ChangeEvent<HTMLInputElement>
   ): void => {
     setSelectedCryptoOrders(
-      event.target.checked
-        ? cryptoOrders.map((cryptoOrder) => cryptoOrder.id)
-        : []
+      event.target.checked ? posts.map((post: PostProps) => post.id) : []
     );
   };
 
@@ -166,7 +164,7 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
     setLimit(parseInt(event.target.value));
   };
 
-  const filteredCryptoOrders = applyFilters(cryptoOrders, filters);
+  const filteredCryptoOrders = applyFilters(posts, filters);
   const paginatedCryptoOrders = applyPagination(
     filteredCryptoOrders,
     page,
@@ -174,9 +172,8 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
   );
   const selectedSomeCryptoOrders =
     selectedCryptoOrders.length > 0 &&
-    selectedCryptoOrders.length < cryptoOrders.length;
-  const selectedAllCryptoOrders =
-    selectedCryptoOrders.length === cryptoOrders.length;
+    selectedCryptoOrders.length < posts.length;
+  const selectedAllCryptoOrders = selectedCryptoOrders.length === posts.length;
   const theme = useTheme();
 
   return (
@@ -232,82 +229,80 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ cryptoOrders }) => {
             </TableRow>
           </TableHead>
           <TableBody>
-            {paginatedCryptoOrders.map((cryptoOrder) => {
+            {paginatedCryptoOrders.map((post) => {
               const isCryptoOrderSelected = selectedCryptoOrders.includes(
-                cryptoOrder.id
+                post.id
               );
               return (
-                <TableRow
-                  hover
-                  key={cryptoOrder.id}
-                  selected={isCryptoOrderSelected}
-                >
+                <TableRow hover key={post.id} selected={isCryptoOrderSelected}>
                   <TableCell padding="checkbox">
                     <Checkbox
                       color="primary"
                       checked={isCryptoOrderSelected}
                       onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                        handleSelectOneCryptoOrder(event, cryptoOrder.id)
+                        handleSelectOneCryptoOrder(event, post.id)
                       }
                       value={isCryptoOrderSelected}
                     />
                   </TableCell>
                   <TableCell>
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {cryptoOrder.orderDetails}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                      {format(cryptoOrder.orderDate, 'MMMM dd yyyy')}
-                    </Typography>
+                    <Tooltip title={post.author_id} placement="top">
+                      <Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
+                      >
+                        {post.author_id.slice(0, 10) +
+                          '...' +
+                          post.author_id.slice(-8)}
+                      </Typography>
+                    </Tooltip>
                   </TableCell>
                   <TableCell>
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
+                    <Tooltip
+                      title={post.title.length > 30 && post.title}
+                      placement="top"
                     >
-                      {cryptoOrder.orderID}
-                    </Typography>
+                      <Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
+                      >
+                        {post.title.length > 30
+                          ? post.title.slice(0, 30) + '...'
+                          : post.title}
+                      </Typography>
+                    </Tooltip>
                   </TableCell>
                   <TableCell>
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
+                    <Tooltip
+                      title={post.content.length > 40 && post.content}
+                      placement="top"
                     >
-                      {cryptoOrder.sourceName}
-                    </Typography>
+                      <Typography
+                        variant="body1"
+                        fontWeight="bold"
+                        color="text.primary"
+                        gutterBottom
+                        noWrap
+                      >
+                        {post.content.length > 40
+                          ? post.content.slice(0, 40) + '...'
+                          : post.content}
+                      </Typography>
+                    </Tooltip>
+                  </TableCell>
+                  <TableCell align="right">
                     <Typography variant="body2" color="text.secondary" noWrap>
-                      {cryptoOrder.sourceDesc}
+                      {format(post.created_at, 'MMMM dd yyyy')}
                     </Typography>
                   </TableCell>
                   <TableCell align="right">
-                    <Typography
-                      variant="body1"
-                      fontWeight="bold"
-                      color="text.primary"
-                      gutterBottom
-                      noWrap
-                    >
-                      {cryptoOrder.amountCrypto}
-                      {cryptoOrder.cryptoCurrency}
-                    </Typography>
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                      {cryptoOrder.amount}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    {getStatusLabel(cryptoOrder.status)}
+                    {getStatusLabel(post.status ? 'visible' : 'invisible')}
                   </TableCell>
                   <TableCell align="right">
                     <Tooltip title="Edit Order" arrow>

@@ -33,14 +33,13 @@ export default function Login() {
       const message: string = 'wallet_login_' + id * 3;
       const signature: string = await signer.signMessage(message);
 
-      const { data } = await Api.post('/auth/admin-login', {
+      const { data } = await Api.post('/admin/auth/login', {
         signature,
         message
       });
 
       if (data && data.status) {
         updateUser(data.token);
-        
       } else {
         throw new Error('Something went wrong!');
       }

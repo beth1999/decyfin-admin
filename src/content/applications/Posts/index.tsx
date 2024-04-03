@@ -1,15 +1,23 @@
+import { useState } from 'react';
 import PageHeader from './PageHeader';
 import PageTitleWrapper from '@/components/PageTitleWrapper';
 import { Grid, Container } from '@mui/material';
 import Footer from '@/components/Footer';
 
 import RecentOrders from './RecentOrders';
+import NewPostDialog from './NewPostDialog';
 
 function ApplicationsTransactions() {
+  const [openNew, setOpenNew] = useState<boolean>(false);
+
+  const handleCloseNew = () => {
+    setOpenNew(false);
+  };
+
   return (
     <>
       <PageTitleWrapper>
-        <PageHeader />
+        <PageHeader setOpen={setOpenNew} />
       </PageTitleWrapper>
       <Container maxWidth="lg">
         <Grid
@@ -24,6 +32,8 @@ function ApplicationsTransactions() {
           </Grid>
         </Grid>
       </Container>
+
+      <NewPostDialog open={openNew} handleClose={handleCloseNew} />
       <Footer />
     </>
   );

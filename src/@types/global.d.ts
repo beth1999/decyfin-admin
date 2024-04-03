@@ -1,13 +1,9 @@
-interface CryptoOrder {
+type PostProps = {
   id: string;
-  orderDetails: string;
-  orderDate: number;
-  orderID: string;
-  sourceName: string;
-  sourceDesc: string;
-  amountCrypto: number;
-  amount: number;
-  cryptoCurrency: string;
-  currency: string;
-  status: CryptoOrderStatus;
-}
+  author_id: string;
+  title: string;
+  content: string;
+  status: boolean;
+  created_at: Date;
+  updated_at: Date;
+};
