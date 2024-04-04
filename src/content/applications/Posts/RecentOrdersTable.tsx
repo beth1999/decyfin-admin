@@ -25,10 +25,13 @@ import {
   Tooltip
 } from '@mui/material';
 
+import { Api } from '@/service/api';
 import Label from '@/components/Label';
 import EditTwoToneIcon from '@mui/icons-material/EditTwoTone';
 import DeleteTwoToneIcon from '@mui/icons-material/DeleteTwoTone';
 import BulkActions from './BulkActions';
+import { toast } from 'react-toastify';
+import EditPostDialog from './EditPostDialog';
 
 type CryptoOrderStatus = 'all' | 'visible' | 'invisible';
 
@@ -99,6 +102,8 @@ const applyPagination = (
 };
 
 const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ posts }) => {
+  const [currentPost, setCurrentPost] = useState<PostProps | null>(null);
+  const [openEdit, setOpenEdit] = useState<boolean>(false);
   const [selectedCryptoOrders, setSelectedCryptoOrders] = useState<string[]>(
     []
   );
@@ -164,6 +169,15 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ posts }) => {
     setLimit(parseInt(event.target.value));
   };
 
+  const handleEditOpen = (post: PostProps) => {
+    setCurrentPost(post);
+    setOpenEdit(true);
+  };
+
+  const handleEditClose = () => {
+    setOpenEdit(false);
+  };
+
   const filteredCryptoOrders = applyFilters(posts, filters);
   const paginatedCryptoOrders = applyPagination(
     filteredCryptoOrders,
@@ -176,180 +190,208 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ posts }) => {
   const selectedAllCryptoOrders = selectedCryptoOrders.length === posts.length;
   const theme = useTheme();
 
+  const handleRemove = async (id: string) => {
+    try {
+      const { data } = await Api.delete(`/post/${id}`);
+
+      if (data && data.status) {
+        toast.success('Successfully removed');
+      }
+    } catch (err) {
+      toast.error('Something went wrong!');
+    }
+  };
+
   return (
-    <Card>
-      {selectedBulkActions && (
-        <Box flex={1} p={2}>
-          <BulkActions />
+    <>
+      <Card>
+        {selectedBulkActions && (
+          <Box flex={1} p={2}>
+            <BulkActions />
+          </Box>
+        )}
+        {!selectedBulkActions && (
+          <CardHeader
+            action={
+              <Box width={150}>
+                <FormControl fullWidth variant="outlined">
+                  <InputLabel>Status</InputLabel>
+                  <Select
+                    value={filters.status}
+                    onChange={handleStatusChange}
+                    label="Status"
+                    autoWidth
+                  >
+                    {statusOptions.map((statusOption) => (
+                      <MenuItem key={statusOption.id} value={statusOption.id}>
+                        {statusOption.name}
+                      </MenuItem>
+                    ))}
+                  </Select>
+                </FormControl>
+              </Box>
+            }
+            title="Total Posts"
+          />
+        )}
+        <Divider />
+        <TableContainer>
+          <Table>
+            <TableHead>
+              <TableRow>
+                <TableCell padding="checkbox">
+                  <Checkbox
+                    color="primary"
+                    checked={selectedAllCryptoOrders}
+                    indeterminate={selectedSomeCryptoOrders}
+                    onChange={handleSelectAllCryptoOrders}
+                  />
+                </TableCell>
+                <TableCell>Author</TableCell>
+                <TableCell>Title</TableCell>
+                <TableCell>Content</TableCell>
+                <TableCell>Created At</TableCell>
+                <TableCell align="right">Status</TableCell>
+                <TableCell align="right">Actions</TableCell>
+              </TableRow>
+            </TableHead>
+            <TableBody>
+              {paginatedCryptoOrders.map((post) => {
+                const isCryptoOrderSelected = selectedCryptoOrders.includes(
+                  post.id
+                );
+                return (
+                  <TableRow
+                    hover
+                    key={post.id}
+                    selected={isCryptoOrderSelected}
+                  >
+                    <TableCell padding="checkbox">
+                      <Checkbox
+                        color="primary"
+                        checked={isCryptoOrderSelected}
+                        onChange={(event: ChangeEvent<HTMLInputElement>) =>
+                          handleSelectOneCryptoOrder(event, post.id)
+                        }
+                        value={isCryptoOrderSelected}
+                      />
+                    </TableCell>
+                    <TableCell>
+                      <Tooltip title={post.author_id} placement="top">
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          color="text.primary"
+                          gutterBottom
+                          noWrap
+                        >
+                          {post.author_id.slice(0, 10) +
+                            '...' +
+                            post.author_id.slice(-8)}
+                        </Typography>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell>
+                      <Tooltip
+                        title={post.title.length > 30 && post.title}
+                        placement="top"
+                      >
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          color="text.primary"
+                          gutterBottom
+                          noWrap
+                        >
+                          {post.title.length > 30
+                            ? post.title.slice(0, 30) + '...'
+                            : post.title}
+                        </Typography>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell>
+                      <Tooltip
+                        title={post.content.length > 40 && post.content}
+                        placement="top"
+                      >
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          color="text.primary"
+                          gutterBottom
+                          noWrap
+                        >
+                          {post.content.length > 40
+                            ? post.content.slice(0, 40) + '...'
+                            : post.content}
+                        </Typography>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell align="right">
+                      <Typography variant="body2" color="text.secondary" noWrap>
+                        {format(post.created_at, 'MMMM dd yyyy')}
+                      </Typography>
+                    </TableCell>
+                    <TableCell align="right">
+                      {getStatusLabel(post.status ? 'visible' : 'invisible')}
+                    </TableCell>
+                    <TableCell align="right">
+                      <Tooltip title="Edit Post" arrow>
+                        <IconButton
+                          sx={{
+                            '&:hover': {
+                              background: theme.colors.primary.lighter
+                            },
+                            color: theme.palette.primary.main
+                          }}
+                          color="inherit"
+                          size="small"
+                          onClick={() => handleEditOpen(post)}
+                        >
+                          <EditTwoToneIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                      <Tooltip title="Delete Post" arrow>
+                        <IconButton
+                          sx={{
+                            '&:hover': {
+                              background: theme.colors.error.lighter
+                            },
+                            color: theme.palette.error.main
+                          }}
+                          color="inherit"
+                          size="small"
+                          onClick={() => handleRemove(post.id)}
+                        >
+                          <DeleteTwoToneIcon fontSize="small" />
+                        </IconButton>
+                      </Tooltip>
+                    </TableCell>
+                  </TableRow>
+                );
+              })}
+            </TableBody>
+          </Table>
+        </TableContainer>
+        <Box p={2}>
+          <TablePagination
+            component="div"
+            count={filteredCryptoOrders.length}
+            onPageChange={handlePageChange}
+            onRowsPerPageChange={handleLimitChange}
+            page={page}
+            rowsPerPage={limit}
+            rowsPerPageOptions={[5, 10, 25, 30]}
+          />
         </Box>
-      )}
-      {!selectedBulkActions && (
-        <CardHeader
-          action={
-            <Box width={150}>
-              <FormControl fullWidth variant="outlined">
-                <InputLabel>Status</InputLabel>
-                <Select
-                  value={filters.status}
-                  onChange={handleStatusChange}
-                  label="Status"
-                  autoWidth
-                >
-                  {statusOptions.map((statusOption) => (
-                    <MenuItem key={statusOption.id} value={statusOption.id}>
-                      {statusOption.name}
-                    </MenuItem>
-                  ))}
-                </Select>
-              </FormControl>
-            </Box>
-          }
-          title="Total Posts"
-        />
-      )}
-      <Divider />
-      <TableContainer>
-        <Table>
-          <TableHead>
-            <TableRow>
-              <TableCell padding="checkbox">
-                <Checkbox
-                  color="primary"
-                  checked={selectedAllCryptoOrders}
-                  indeterminate={selectedSomeCryptoOrders}
-                  onChange={handleSelectAllCryptoOrders}
-                />
-              </TableCell>
-              <TableCell>Author</TableCell>
-              <TableCell>Title</TableCell>
-              <TableCell>Content</TableCell>
-              <TableCell>Created At</TableCell>
-              <TableCell align="right">Status</TableCell>
-              <TableCell align="right">Actions</TableCell>
-            </TableRow>
-          </TableHead>
-          <TableBody>
-            {paginatedCryptoOrders.map((post) => {
-              const isCryptoOrderSelected = selectedCryptoOrders.includes(
-                post.id
-              );
-              return (
-                <TableRow hover key={post.id} selected={isCryptoOrderSelected}>
-                  <TableCell padding="checkbox">
-                    <Checkbox
-                      color="primary"
-                      checked={isCryptoOrderSelected}
-                      onChange={(event: ChangeEvent<HTMLInputElement>) =>
-                        handleSelectOneCryptoOrder(event, post.id)
-                      }
-                      value={isCryptoOrderSelected}
-                    />
-                  </TableCell>
-                  <TableCell>
-                    <Tooltip title={post.author_id} placement="top">
-                      <Typography
-                        variant="body1"
-                        fontWeight="bold"
-                        color="text.primary"
-                        gutterBottom
-                        noWrap
-                      >
-                        {post.author_id.slice(0, 10) +
-                          '...' +
-                          post.author_id.slice(-8)}
-                      </Typography>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell>
-                    <Tooltip
-                      title={post.title.length > 30 && post.title}
-                      placement="top"
-                    >
-                      <Typography
-                        variant="body1"
-                        fontWeight="bold"
-                        color="text.primary"
-                        gutterBottom
-                        noWrap
-                      >
-                        {post.title.length > 30
-                          ? post.title.slice(0, 30) + '...'
-                          : post.title}
-                      </Typography>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell>
-                    <Tooltip
-                      title={post.content.length > 40 && post.content}
-                      placement="top"
-                    >
-                      <Typography
-                        variant="body1"
-                        fontWeight="bold"
-                        color="text.primary"
-                        gutterBottom
-                        noWrap
-                      >
-                        {post.content.length > 40
-                          ? post.content.slice(0, 40) + '...'
-                          : post.content}
-                      </Typography>
-                    </Tooltip>
-                  </TableCell>
-                  <TableCell align="right">
-                    <Typography variant="body2" color="text.secondary" noWrap>
-                      {format(post.created_at, 'MMMM dd yyyy')}
-                    </Typography>
-                  </TableCell>
-                  <TableCell align="right">
-                    {getStatusLabel(post.status ? 'visible' : 'invisible')}
-                  </TableCell>
-                  <TableCell align="right">
-                    <Tooltip title="Edit Order" arrow>
-                      <IconButton
-                        sx={{
-                          '&:hover': {
-                            background: theme.colors.primary.lighter
-                          },
-                          color: theme.palette.primary.main
-                        }}
-                        color="inherit"
-                        size="small"
-                      >
-                        <EditTwoToneIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                    <Tooltip title="Delete Order" arrow>
-                      <IconButton
-                        sx={{
-                          '&:hover': { background: theme.colors.error.lighter },
-                          color: theme.palette.error.main
-                        }}
-                        color="inherit"
-                        size="small"
-                      >
-                        <DeleteTwoToneIcon fontSize="small" />
-                      </IconButton>
-                    </Tooltip>
-                  </TableCell>
-                </TableRow>
-              );
-            })}
-          </TableBody>
-        </Table>
-      </TableContainer>
-      <Box p={2}>
-        <TablePagination
-          component="div"
-          count={filteredCryptoOrders.length}
-          onPageChange={handlePageChange}
-          onRowsPerPageChange={handleLimitChange}
-          page={page}
-          rowsPerPage={limit}
-          rowsPerPageOptions={[5, 10, 25, 30]}
-        />
-      </Box>
-    </Card>
+      </Card>
+
+      <EditPostDialog
+        open={openEdit}
+        handleClose={handleEditClose}
+        data={currentPost}
+      />
+    </>
   );
 };
 
