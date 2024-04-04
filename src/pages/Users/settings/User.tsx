@@ -11,7 +11,9 @@ import {
   TableContainer,
   TableHead,
   TablePagination,
-  TableRow
+  TableRow,
+  Tooltip,
+  Typography
 } from '@mui/material';
 import { format } from 'date-fns';
 import { Api } from '@/service/api';
@@ -103,7 +105,15 @@ function UserTab() {
               .map((row: UserProps) => {
                 return (
                   <TableRow hover role="checkbox" tabIndex={-1} key={row.id}>
-                    <TableCell align="left">{row.address}</TableCell>
+                    <TableCell align="left">
+                      <Tooltip title={row.address} placement="top">
+                        <Typography>
+                          {row.address.slice(0, 6) +
+                            '...' +
+                            row.address.slice(-5)}
+                        </Typography>
+                      </Tooltip>
+                    </TableCell>
                     <TableCell align="left">{row.username}</TableCell>
                     <TableCell align="left">
                       {format(row.created_at, 'MMMM dd yyyy')}
