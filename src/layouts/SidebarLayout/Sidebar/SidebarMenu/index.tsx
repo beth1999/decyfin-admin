@@ -198,10 +198,10 @@ function SidebarMenu() {
                   disableRipple
                   component={RouterLink}
                   onClick={closeSidebar}
-                  to="/post"
+                  to="/blog"
                   startIcon={<TableChartTwoToneIcon />}
                 >
-                  Blog Post
+                  Blog
                 </Button>
               </ListItem>
               <ListItem component="div">
@@ -215,6 +215,17 @@ function SidebarMenu() {
                   Messenger
                 </Button>
               </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/user"
+                  startIcon={<DisplaySettingsTwoToneIcon />}
+                >
+                  Account
+                </Button>
+              </ListItem>
             </List>
           </SubMenuWrapper>
         </List>
@@ -222,7 +233,7 @@ function SidebarMenu() {
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
-              Accounts
+              Account
             </ListSubheader>
           }
         >
@@ -236,18 +247,7 @@ function SidebarMenu() {
                   to="/profile/details"
                   startIcon={<AccountCircleTwoToneIcon />}
                 >
-                  User Profile
-                </Button>
-              </ListItem>
-              <ListItem component="div">
-                <Button
-                  disableRipple
-                  component={RouterLink}
-                  onClick={closeSidebar}
-                  to="/profile/settings"
-                  startIcon={<DisplaySettingsTwoToneIcon />}
-                >
-                  Account Settings
+                  Profile
                 </Button>
               </ListItem>
             </List>

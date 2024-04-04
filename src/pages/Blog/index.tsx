@@ -1,41 +1,42 @@
-import { useState, ChangeEvent } from 'react';
-import PageHeader from './PageHeader';
-import PageTitleWrapper from '@/components/PageTitleWrapper';
-import { Container, Tabs, Tab, Grid } from '@mui/material';
-import Footer from '@/components/Footer';
-import { styled } from '@mui/material/styles';
+import { ChangeEvent, useState } from 'react';
+import { Grid, Container, styled, Tabs, Tab } from '@mui/material';
 
-import ActivityTab from './ActivityTab';
-import EditProfileTab from './EditProfileTab';
-import NotificationsTab from './NotificationsTab';
-import SecurityTab from './SecurityTab';
+import PageHeader from './PageHeader';
+import RecentOrders from './RecentOrders';
+import NewPostDialog from './NewPostDialog';
+
+import PageTitleWrapper from '@/components/PageTitleWrapper';
+import Footer from '@/components/Footer';
 
 const TabsWrapper = styled(Tabs)(
   () => `
     .MuiTabs-scrollableX {
       overflow-x: auto !important;
     }
-`
+  `
 );
 
-function ManagementUserSettings() {
-  const [currentTab, setCurrentTab] = useState<string>('activity');
+function ApplicationsTransactions() {
+  const [openNew, setOpenNew] = useState<boolean>(false);
+  const [currentTab, setCurrentTab] = useState<string>('blog');
+
+  const handleCloseNew = () => {
+    setOpenNew(false);
+  };
 
   const tabs = [
-    { value: 'activity', label: 'Activity' },
-    { value: 'edit_profile', label: 'Edit Profile' },
-    { value: 'notifications', label: 'Notifications' },
-    { value: 'security', label: 'Passwords/Security' }
+    { value: 'blog', label: 'Blog' },
+    { value: 'comment', label: 'Comment' }
   ];
 
-  const handleTabsChange = (event: ChangeEvent<{}>, value: string): void => {
+  const handleTabsChange = (_: ChangeEvent<object>, value: string): void => {
     setCurrentTab(value);
   };
 
   return (
     <>
       <PageTitleWrapper>
-        <PageHeader />
+        <PageHeader setOpen={setOpenNew} />
       </PageTitleWrapper>
       <Container maxWidth="lg">
         <Grid
@@ -60,16 +61,16 @@ function ManagementUserSettings() {
             </TabsWrapper>
           </Grid>
           <Grid item xs={12}>
-            {currentTab === 'activity' && <ActivityTab />}
-            {currentTab === 'edit_profile' && <EditProfileTab />}
-            {currentTab === 'notifications' && <NotificationsTab />}
-            {currentTab === 'security' && <SecurityTab />}
+            {currentTab === 'blog' && <RecentOrders />}
+            {currentTab === 'comment' && <h3>No data</h3>}
           </Grid>
         </Grid>
       </Container>
+
+      <NewPostDialog open={openNew} handleClose={handleCloseNew} />
       <Footer />
     </>
   );
 }
 
-export default ManagementUserSettings;
+export default ApplicationsTransactions;

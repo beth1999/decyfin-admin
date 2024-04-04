@@ -77,9 +77,7 @@ function Sidebar() {
             background: theme.colors.alpha.trueWhite[10]
           }}
         />
-        <Box p={2} textAlign={'center'}>
-          Welcome
-        </Box>
+        <Box sx={{ p: 2, textAlign: 'center' }}>&copy; Decyfin Community</Box>
       </SidebarWrapper>
       <Drawer
         sx={{
