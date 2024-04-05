@@ -1,4 +1,4 @@
-import { AUTH_KEY } from '@/service/api';
+import { AUTH_KEY, Api } from '@/service/api';
 import { useState, createContext, useContext } from 'react';
 import { jwtDecode } from 'jwt-decode';
 import { toast } from 'react-toastify';
@@ -36,6 +36,7 @@ export const AuthProvider = ({ children }: { children: React.ReactNode }) => {
     const decoded_data: TokenType = jwtDecode(token);
 
     localStorage.setItem(AUTH_KEY, token);
+    Api.defaults.headers['Authorization'] = token;
 
     setUser({
       id: decoded_data.id,

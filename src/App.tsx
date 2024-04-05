@@ -15,25 +15,11 @@ const projectId = 'faf641330f6b3ce2811bb5eb411267df';
 // Set chains
 const chains = [
   {
-    chainId: 1,
-    name: 'Ethereum',
-    currency: 'ETH',
-    explorerUrl: 'https://etherscan.io',
-    rpcUrl: 'https://cloudflare-eth.com'
-  },
-  {
-    chainId: 11155111,
-    name: 'Sepolia',
-    currency: 'ETH',
-    explorerUrl: 'https://sepolia.etherscan.io',
-    rpcUrl: 'https://ethereum-sepolia.publicnode.com'
-  },
-  {
-    chainId: 4002,
-    name: 'Fantom',
-    currency: 'FTM',
-    explorerUrl: 'https://testnet.ftmscan.com',
-    rpcUrl: 'https://rpc.testnet.fantom.network'
+    chainId: 56,
+    name: 'BNB Smart Chain Mainnet',
+    currency: 'BNB',
+    explorerUrl: 'https://bscscan.com',
+    rpcUrl: 'https://bsc-dataseed1.binance.org/'
   }
 ];
 

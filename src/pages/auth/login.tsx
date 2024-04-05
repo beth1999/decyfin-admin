@@ -13,14 +13,18 @@ import { useAuth } from '@/contexts/AuthContext';
 
 export default function Login() {
   const { open } = useWeb3Modal();
-  const { isConnected } = useWeb3ModalAccount();
+  const { isConnected, chainId } = useWeb3ModalAccount();
   const { walletProvider } = useWeb3ModalProvider();
   const { disconnect } = useDisconnect();
   const { updateUser } = useAuth();
 
   useEffect(() => {
     if (walletProvider) {
-      handleSubmit(walletProvider);
+      if (chainId === 56) {
+        handleSubmit(walletProvider);
+      } else {
+        toast.warn('Please choose BSC Mainnet');
+      }
     }
   }, [isConnected]);
 
