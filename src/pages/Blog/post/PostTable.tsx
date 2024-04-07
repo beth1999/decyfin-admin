@@ -248,6 +248,7 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ posts }) => {
                   />
                 </TableCell>
                 <TableCell>Author</TableCell>
+                <TableCell>Category</TableCell>
                 <TableCell>Title</TableCell>
                 <TableCell>Content</TableCell>
                 <TableCell>Created At</TableCell>
@@ -285,9 +286,28 @@ const RecentOrdersTable: FC<RecentOrdersTableProps> = ({ posts }) => {
                           gutterBottom
                           noWrap
                         >
-                          {post.author_id.slice(0, 10) +
+                          {post.author_id.slice(0, 5) +
                             '...' +
-                            post.author_id.slice(-8)}
+                            post.author_id.slice(-5)}
+                        </Typography>
+                      </Tooltip>
+                    </TableCell>
+                    <TableCell>
+                      <Tooltip title={post.category.name} placement="top">
+                        <Typography
+                          variant="body1"
+                          fontWeight="bold"
+                          color="text.primary"
+                          gutterBottom
+                          noWrap
+                        >
+                          <Label color="info">
+                            {post.category.name.length > 11
+                              ? post.category.name.slice(0, 10) +
+                                '...' +
+                                post.category.name.slice(-8)
+                              : post.category.name}
+                          </Label>
                         </Typography>
                       </Tooltip>
                     </TableCell>

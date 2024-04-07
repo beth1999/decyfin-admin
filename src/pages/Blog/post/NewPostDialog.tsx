@@ -1,4 +1,4 @@
-import React, { useEffect } from 'react';
+import React, { useEffect, useState } from 'react';
 import {
   DialogTitle,
   DialogContentText,
@@ -13,7 +13,12 @@ import {
   Divider,
   FormGroup,
   FormControlLabel,
-  Switch
+  Switch,
+  FormControl,
+  InputLabel,
+  Select,
+  MenuItem,
+  SelectChangeEvent
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { styled, useTheme } from '@mui/material/styles';
@@ -44,58 +49,78 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   }
 }));
 
-export default function EditPostDialog({
-  data,
+type CategoryProps = {
+  id: string;
+  name: string;
+};
+
+export default function NewPostDialog({
   open,
   handleClose
 }: {
-  data: PostProps | null;
   open: boolean;
   handleClose: () => void;
 }) {
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-  useEffect(() => {
-    setPostData({
-      title: data?.title || '',
-      content: data?.content || '',
-      status: data?.status === undefined ? true : data?.status
-    });
-  }, [data]);
-
   const [postData, setPostData] = React.useState<PostDataProps>({
     title: '',
     content: '',
     status: true
   });
+  const [categories, setCategories] = useState<CategoryProps[] | []>([]);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [currentCategory, setCurrentCategory] = useState<any>('');
+
+  useEffect(() => {
+    getCategory();
+  }, []);
+
+  const getCategory = async () => {
+    try {
+      const { data } = await Api.get('/category');
+
+      setCategories(data.data);
+    } catch (err) {
+      setCategories([]);
+    }
+  };
 
   const handleSubmit = async () => {
-    if (postData.title.trim() === '' || postData.content.trim() === '') {
+    if (
+      postData.title.trim() === '' ||
+      postData.content.trim() === '' ||
+      currentCategory.trim() === ''
+    ) {
       return;
     }
 
     try {
-      const { data: result } = await Api.put(`/post/${data?.id}`, postData);
+      const { data } = await Api.post('/post', {
+        ...postData,
+        category_id: currentCategory
+      });
 
-      if (result && result.status) {
-        toast.success('Successfully updated');
+      if (data && data.status) {
+        toast.success('Successfully created');
         setPostData({
           title: '',
           content: '',
           status: true
         });
+        setCurrentCategory('');
         handleClose();
       }
-
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      if (err?.response?.data) {
-        toast.error(err.response.data);
-      } else {
-        toast.error('Something went wrong!');
-      }
+      toast.error('Failed create');
     }
+  };
+
+  const handleStatusChange = (e: SelectChangeEvent<HTMLInputElement>) => {
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    setCurrentCategory(String(e.target.value));
   };
 
   return (
@@ -105,10 +130,10 @@ export default function EditPostDialog({
       TransitionComponent={Transition}
       fullScreen={fullScreen}
     >
-      <DialogTitle>Update blog</DialogTitle>
+      <DialogTitle>Post new blog</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Please enter a title and content here for updating post for our users.
+          Please enter a title and content here for your new post for our users.
         </DialogContentText>
         <Divider sx={{ my: 2 }} />
         <Box
@@ -120,6 +145,21 @@ export default function EditPostDialog({
             gap: 2
           }}
         >
+          <FormControl fullWidth variant="outlined">
+            <InputLabel>Category</InputLabel>
+            <Select
+              value={currentCategory}
+              onChange={handleStatusChange}
+              label="Category"
+              autoWidth
+            >
+              {categories.map((category) => (
+                <MenuItem key={category.id} value={category.id}>
+                  {category.name}
+                </MenuItem>
+              ))}
+            </Select>
+          </FormControl>
           <TextField
             id="title"
             name="title"
@@ -176,7 +216,7 @@ export default function EditPostDialog({
           Cancel
         </Button>
         <Button onClick={handleSubmit} color="success" variant="contained">
-          Update
+          Submit
         </Button>
       </DialogActions>
     </BootstrapDialog>

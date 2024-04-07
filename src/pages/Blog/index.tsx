@@ -2,11 +2,13 @@ import { ChangeEvent, useState } from 'react';
 import { Grid, Container, styled, Tabs, Tab } from '@mui/material';
 
 import PageHeader from './PageHeader';
-import RecentOrders from './RecentOrders';
-import NewPostDialog from './NewPostDialog';
+import Post from './post';
+import Category from './category';
+import NewPostDialog from './post/NewPostDialog';
 
 import PageTitleWrapper from '@/components/PageTitleWrapper';
 import Footer from '@/components/Footer';
+import NewCategoryDialog from './category/NewCategoryDialog';
 
 const TabsWrapper = styled(Tabs)(
   () => `
@@ -16,17 +18,24 @@ const TabsWrapper = styled(Tabs)(
   `
 );
 
+interface TabProps {
+  value: string;
+  label: string;
+}
+
 function ApplicationsTransactions() {
-  const [openNew, setOpenNew] = useState<boolean>(false);
   const [currentTab, setCurrentTab] = useState<string>('blog');
+  const [openNewPost, setOpenNewPost] = useState<boolean>(false);
+  const [openNewCategory, setOpenNewCategory] = useState<boolean>(false);
 
   const handleCloseNew = () => {
-    setOpenNew(false);
+    setOpenNewPost(false);
+    setOpenNewCategory(false);
   };
 
-  const tabs = [
+  const tabs: TabProps[] = [
     { value: 'blog', label: 'Blog' },
-    { value: 'comment', label: 'Comment' }
+    { value: 'category', label: 'Category' }
   ];
 
   const handleTabsChange = (_: ChangeEvent<object>, value: string): void => {
@@ -36,7 +45,11 @@ function ApplicationsTransactions() {
   return (
     <>
       <PageTitleWrapper>
-        <PageHeader setOpen={setOpenNew} />
+        <PageHeader
+          currentTab={currentTab}
+          setOpenNewPost={setOpenNewPost}
+          setOpenNewCategory={setOpenNewCategory}
+        />
       </PageTitleWrapper>
       <Container maxWidth="lg">
         <Grid
@@ -55,19 +68,20 @@ function ApplicationsTransactions() {
               textColor="primary"
               indicatorColor="primary"
             >
-              {tabs.map((tab) => (
+              {tabs.map((tab: TabProps) => (
                 <Tab key={tab.value} label={tab.label} value={tab.value} />
               ))}
             </TabsWrapper>
           </Grid>
           <Grid item xs={12}>
-            {currentTab === 'blog' && <RecentOrders />}
-            {currentTab === 'comment' && <h3>No data</h3>}
+            {currentTab === 'blog' && <Post />}
+            {currentTab === 'category' && <Category />}
           </Grid>
         </Grid>
       </Container>
 
-      <NewPostDialog open={openNew} handleClose={handleCloseNew} />
+      <NewPostDialog open={openNewPost} handleClose={handleCloseNew} />
+      <NewCategoryDialog open={openNewCategory} handleClose={handleCloseNew} />
       <Footer />
     </>
   );

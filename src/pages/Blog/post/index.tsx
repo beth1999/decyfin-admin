@@ -1,9 +1,9 @@
 import React, { useState } from 'react';
 import { Api } from '@/service/api';
 import { Card } from '@mui/material';
-import RecentOrdersTable from './RecentOrdersTable';
+import RecentOrdersTable from './PostTable';
 
-function RecentOrders() {
+function Post() {
   const [posts, setPosts] = useState<PostProps[] | []>([]);
 
   React.useEffect(() => {
@@ -27,4 +27,4 @@ function RecentOrders() {
   );
 }
 
-export default RecentOrders;
+export default Post;

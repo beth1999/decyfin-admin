@@ -10,21 +10,12 @@ import {
   Slide,
   useMediaQuery,
   Box,
-  Divider,
-  FormGroup,
-  FormControlLabel,
-  Switch
+  Divider
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { styled, useTheme } from '@mui/material/styles';
 import { Api } from '@/service/api';
 import { toast } from 'react-toastify';
-
-type PostDataProps = {
-  title: string;
-  content: string;
-  status: boolean;
-};
 
 const Transition = React.forwardRef(function Transition(
   props: TransitionProps & {
@@ -44,7 +35,7 @@ const BootstrapDialog = styled(Dialog)(({ theme }) => ({
   }
 }));
 
-export default function NewPostDialog({
+export default function NewCategoryDialog({
   open,
   handleClose
 }: {
@@ -54,32 +45,24 @@ export default function NewPostDialog({
   const theme = useTheme();
   const fullScreen = useMediaQuery(theme.breakpoints.down('md'));
 
-  const [postData, setPostData] = React.useState<PostDataProps>({
-    title: '',
-    content: '',
-    status: true
-  });
+  const [category, setCategory] = React.useState<string>('');
 
   const handleSubmit = async () => {
-    if (postData.title.trim() === '' || postData.content.trim() === '') {
+    if (category.trim() === '') {
       return;
     }
 
     try {
-      const { data } = await Api.post('/post/create', postData);
+      const { data } = await Api.post('/category', { name: category });
 
       if (data && data.status) {
         toast.success('Successfully created');
-        setPostData({
-          title: '',
-          content: '',
-          status: true
-        });
+        setCategory('');
         handleClose();
       }
       // eslint-disable-next-line @typescript-eslint/no-explicit-any
     } catch (err: any) {
-      console.log(err);
+      toast.error('Failed create');
     }
   };
 
@@ -90,10 +73,10 @@ export default function NewPostDialog({
       TransitionComponent={Transition}
       fullScreen={fullScreen}
     >
-      <DialogTitle>Post new blog</DialogTitle>
+      <DialogTitle>Create new category</DialogTitle>
       <DialogContent>
         <DialogContentText>
-          Please enter a title and content here for your new post for our users.
+          Please enter a name here for your new category for our users.
         </DialogContentText>
         <Divider sx={{ my: 2 }} />
         <Box
@@ -106,54 +89,15 @@ export default function NewPostDialog({
           }}
         >
           <TextField
-            id="title"
-            name="title"
-            label="Please enter title"
+            label="Please enter name"
             type="text"
             fullWidth
             variant="outlined"
-            value={postData.title}
+            value={category}
             onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setPostData({
-                ...postData,
-                [e.target.name]: e.target.value
-              })
+              setCategory(e.target.value)
             }
           />
-          <TextField
-            id="content"
-            name="content"
-            label="Please enter content"
-            type="text"
-            fullWidth
-            variant="outlined"
-            multiline
-            rows={4}
-            value={postData.content}
-            onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-              setPostData({
-                ...postData,
-                [e.target.name]: e.target.value
-              })
-            }
-          />
-          <FormGroup>
-            <FormControlLabel
-              control={
-                <Switch
-                  name="status"
-                  checked={postData.status}
-                  onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
-                    setPostData({
-                      ...postData,
-                      [e.target.name]: e.target.checked
-                    })
-                  }
-                />
-              }
-              label="Status"
-            />
-          </FormGroup>
         </Box>
       </DialogContent>
       <DialogActions>
