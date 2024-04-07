@@ -4,7 +4,8 @@ import { themeCreator } from './base';
 import { StylesProvider } from '@mui/styles';
 
 export const ThemeContext = React.createContext(
-  (themeName: string): void => {}
+  // eslint-disable-next-line @typescript-eslint/no-unused-vars
+  (_: string): void => {}
 );
 
 const ThemeProviderWrapper = ({ children }: { children: React.ReactNode }) => {

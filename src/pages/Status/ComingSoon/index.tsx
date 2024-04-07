@@ -73,7 +73,8 @@ function StatusComingSoon() {
     return timeLeft;
   };
 
-  const [timeLeft, setTimeLeft] = useState(calculateTimeLeft());
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const [timeLeft, setTimeLeft] = useState<any>(calculateTimeLeft());
 
   useEffect(() => {
     setTimeout(() => {
@@ -81,7 +82,8 @@ function StatusComingSoon() {
     }, 1000);
   });
 
-  const timerComponents = [];
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const timerComponents: any = [];
 
   Object.keys(timeLeft).forEach((interval) => {
     if (!timeLeft[interval]) {

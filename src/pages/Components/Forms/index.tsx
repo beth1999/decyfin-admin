@@ -55,14 +55,16 @@ const currencies = [
 function Forms() {
   const [currency, setCurrency] = useState('EUR');
 
-  const handleChange = (event) => {
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleChange = (event: any) => {
     setCurrency(event.target.value);
   };
 
   const [value, setValue] = useState(30);
 
-  const handleChange2 = (event, newValue) => {
-    setValue(newValue);
+  // eslint-disable-next-line @typescript-eslint/no-explicit-any
+  const handleChange2 = (e: any) => {
+    setValue(e.target.value);
   };
 
   return (

@@ -1,3 +1,4 @@
+import { useState, useEffect } from 'react';
 import {
   Card,
   Box,
@@ -9,6 +10,7 @@ import {
 } from '@mui/material';
 import LocalPostOfficeIcon from '@mui/icons-material/LocalPostOffice';
 import GroupAddIcon from '@mui/icons-material/GroupAdd';
+import { Api } from '@/service/api';
 
 const RootWrapper = styled(Card)(
   ({ theme }) => `
@@ -45,6 +47,31 @@ const TypographySecondary = styled(Typography)(
 
 function Performance() {
   const theme = useTheme();
+  const [analytics, setAnalytics] = useState<{ posts: number; users: number }>({
+    posts: 0,
+    users: 0
+  });
+
+  useEffect(() => {
+    getData();
+  }, []);
+
+  const getData = async () => {
+    try {
+      const { data: PostData } = await Api.get('/post/count');
+      const { data: UserData } = await Api.get('/user/count');
+
+      setAnalytics({
+        posts: PostData.data,
+        users: UserData.data
+      });
+    } catch (err) {
+      setAnalytics({
+        posts: 0,
+        users: 0
+      });
+    }
+  };
 
   return (
     <RootWrapper
@@ -82,7 +109,7 @@ function Performance() {
             <LocalPostOfficeIcon fontSize="large" />
           </AvatarSuccess>
           <Box>
-            <Typography variant="h1">23</Typography>
+            <Typography variant="h1">{analytics.posts}</Typography>
             <TypographySecondary variant="subtitle2" noWrap>
               Total Posts
             </TypographySecondary>
@@ -105,7 +132,7 @@ function Performance() {
             <GroupAddIcon fontSize="large" />
           </AvatarError>
           <Box>
-            <Typography variant="h1">5</Typography>
+            <Typography variant="h1">{analytics.users}</Typography>
             <TypographySecondary variant="subtitle2" noWrap>
               Total Users
             </TypographySecondary>

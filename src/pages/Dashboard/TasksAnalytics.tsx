@@ -1,28 +1,6 @@
 import { useRef, useState } from 'react';
-import { Button, Box, Menu, MenuItem, Typography, styled } from '@mui/material';
+import { Button, Box, Menu, MenuItem, Typography } from '@mui/material';
 import ExpandMoreTwoToneIcon from '@mui/icons-material/ExpandMoreTwoTone';
-
-const DotPrimaryLight = styled('span')(
-  ({ theme }) => `
-    border-radius: 22px;
-    background: ${theme.colors.primary.lighter};
-    width: ${theme.spacing(1.5)};
-    height: ${theme.spacing(1.5)};
-    display: inline-block;
-    margin-right: ${theme.spacing(0.5)};
-`
-);
-
-const DotPrimary = styled('span')(
-  ({ theme }) => `
-    border-radius: 22px;
-    background: ${theme.colors.primary.main};
-    width: ${theme.spacing(1.5)};
-    height: ${theme.spacing(1.5)};
-    display: inline-block;
-    margin-right: ${theme.spacing(0.5)};
-`
-);
 
 function TasksAnalytics() {
   const periods = [
