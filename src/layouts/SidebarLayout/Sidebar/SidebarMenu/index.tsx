@@ -13,9 +13,7 @@ import { NavLink as RouterLink } from 'react-router-dom';
 import { SidebarContext } from '@/contexts/SidebarContext';
 
 import DesignServicesTwoToneIcon from '@mui/icons-material/DesignServicesTwoTone';
-import MmsTwoToneIcon from '@mui/icons-material/MmsTwoTone';
 import TableChartTwoToneIcon from '@mui/icons-material/TableChartTwoTone';
-import AccountCircleTwoToneIcon from '@mui/icons-material/AccountCircleTwoTone';
 import DisplaySettingsTwoToneIcon from '@mui/icons-material/DisplaySettingsTwoTone';
 
 const MenuWrapper = styled(Box)(
@@ -204,7 +202,7 @@ function SidebarMenu() {
                   Blog
                 </Button>
               </ListItem>
-              <ListItem component="div">
+              {/* <ListItem component="div">
                 <Button
                   disableRipple
                   component={RouterLink}
@@ -214,7 +212,7 @@ function SidebarMenu() {
                 >
                   Messenger
                 </Button>
-              </ListItem>
+              </ListItem> */}
               <ListItem component="div">
                 <Button
                   disableRipple
@@ -229,7 +227,7 @@ function SidebarMenu() {
             </List>
           </SubMenuWrapper>
         </List>
-        <List
+        {/* <List
           component="div"
           subheader={
             <ListSubheader component="div" disableSticky>
@@ -252,7 +250,7 @@ function SidebarMenu() {
               </ListItem>
             </List>
           </SubMenuWrapper>
-        </List>
+        </List> */}
       </MenuWrapper>
     </>
   );

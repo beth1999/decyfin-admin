@@ -108,8 +108,8 @@ function DashboardTasks() {
   const [currentTab, setCurrentTab] = useState<string>('analytics');
 
   const tabs = [
-    { value: 'analytics', label: 'Analytics Overview' },
-    { value: 'postSearch', label: 'Post Search' }
+    { value: 'analytics', label: 'Analytics Overview' }
+    // { value: 'postSearch', label: 'Post Search' }
   ];
 
   const handleTabsChange = (

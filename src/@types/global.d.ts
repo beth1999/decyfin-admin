@@ -17,3 +17,11 @@ interface CategoryProps {
   name: string;
   created_at: string;
 }
+
+interface VoteProps {
+  id: string;
+  question: string;
+  status: 'OPEN' | 'BLOCK';
+  y_vote?: string[];
+  n_vote?: string[];
+}

@@ -9,6 +9,7 @@ import NewPostDialog from './post/NewPostDialog';
 import PageTitleWrapper from '@/components/PageTitleWrapper';
 import Footer from '@/components/Footer';
 import NewCategoryDialog from './category/NewCategoryDialog';
+import Vote from './vote';
 
 const TabsWrapper = styled(Tabs)(
   () => `
@@ -35,7 +36,8 @@ function ApplicationsTransactions() {
 
   const tabs: TabProps[] = [
     { value: 'blog', label: 'Blog' },
-    { value: 'category', label: 'Category' }
+    { value: 'category', label: 'Category' },
+    { value: 'vote', label: 'Vote' }
   ];
 
   const handleTabsChange = (_: ChangeEvent<object>, value: string): void => {
@@ -76,6 +78,7 @@ function ApplicationsTransactions() {
           <Grid item xs={12}>
             {currentTab === 'blog' && <Post />}
             {currentTab === 'category' && <Category />}
+            {currentTab === 'vote' && <Vote />}
           </Grid>
         </Grid>
       </Container>

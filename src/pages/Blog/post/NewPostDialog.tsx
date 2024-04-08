@@ -18,7 +18,8 @@ import {
   InputLabel,
   Select,
   MenuItem,
-  SelectChangeEvent
+  SelectChangeEvent,
+  Stack
 } from '@mui/material';
 import { TransitionProps } from '@mui/material/transitions';
 import { styled, useTheme } from '@mui/material/styles';
@@ -69,6 +70,8 @@ export default function NewPostDialog({
     content: '',
     status: true
   });
+  const [isVote, setIsVote] = useState<boolean>(false);
+  const [voteContent, setVoteContent] = useState<string>('');
   const [categories, setCategories] = useState<CategoryProps[] | []>([]);
   // eslint-disable-next-line @typescript-eslint/no-explicit-any
   const [currentCategory, setCurrentCategory] = useState<any>('');
@@ -96,10 +99,16 @@ export default function NewPostDialog({
       return;
     }
 
+    if (isVote && voteContent.trim() === '') {
+      return;
+    }
+
     try {
       const { data } = await Api.post('/post', {
         ...postData,
-        category_id: currentCategory
+        category_id: currentCategory,
+        isVote: isVote,
+        question: voteContent
       });
 
       if (data && data.status) {
@@ -209,6 +218,54 @@ export default function NewPostDialog({
               label="Status"
             />
           </FormGroup>
+        </Box>
+        <Divider sx={{ my: 2 }} />
+        <Box
+          sx={{
+            display: 'flex',
+            flexDirection: 'column',
+            alignItems: 'start',
+            justifyContent: 'center',
+            gap: 2
+          }}
+        >
+          <Stack
+            direction={'row'}
+            justifyContent={'end'}
+            width={'100%'}
+            gap={1}
+          >
+            <FormGroup>
+              <FormControlLabel
+                control={
+                  <Switch
+                    name="isVote"
+                    checked={isVote}
+                    onChange={(e) => setIsVote(e.target.checked)}
+                  />
+                }
+                label="IsVote?"
+              />
+            </FormGroup>
+          </Stack>
+          {isVote ? (
+            <>
+              <TextField
+                id="question"
+                name="question"
+                label="Please enter vote content"
+                type="text"
+                fullWidth
+                variant="outlined"
+                multiline
+                rows={4}
+                value={voteContent}
+                onChange={(e: React.ChangeEvent<HTMLInputElement>) =>
+                  setVoteContent(e.target.value)
+                }
+              />
+            </>
+          ) : null}
         </Box>
       </DialogContent>
       <DialogActions>
