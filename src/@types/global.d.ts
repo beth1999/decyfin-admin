@@ -24,4 +24,5 @@ interface VoteProps {
   status: 'OPEN' | 'BLOCK';
   y_vote?: string[];
   n_vote?: string[];
+  nt_vote?: string[];
 }

@@ -80,9 +80,12 @@ function Vote() {
                   Answer(No)
                 </TableCell>
                 <TableCell align="left" style={{ minWidth: 170 }}>
+                  Answer(Not sure)
+                </TableCell>
+                <TableCell align="left" style={{ minWidth: 100 }}>
                   Status
                 </TableCell>
-                <TableCell align="right" style={{ minWidth: 170 }}>
+                <TableCell align="right" style={{ minWidth: 100 }}>
                   Action
                 </TableCell>
               </TableRow>
@@ -107,6 +110,7 @@ function Vote() {
                       </TableCell>
                       <TableCell align="left">{vote.y_vote?.length}</TableCell>
                       <TableCell align="left">{vote.n_vote?.length}</TableCell>
+                      <TableCell align="left">{vote.nt_vote?.length}</TableCell>
                       <TableCell align="left">
                         <Label
                           color={vote.status === 'OPEN' ? 'success' : 'error'}
