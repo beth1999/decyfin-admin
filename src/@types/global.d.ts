@@ -26,3 +26,15 @@ interface VoteProps {
   n_vote?: string[];
   nt_vote?: string[];
 }
+
+interface SurveyProps {
+  id: string;
+  content: string;
+  option1: string[];
+  option2: string[];
+  option3: string[];
+  option4: string[];
+  option5: string[];
+  created_at: string;
+  status: 'OPEN' | 'BLOCK';
+}

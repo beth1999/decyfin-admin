@@ -15,6 +15,7 @@ import { SidebarContext } from '@/contexts/SidebarContext';
 import DesignServicesTwoToneIcon from '@mui/icons-material/DesignServicesTwoTone';
 import TableChartTwoToneIcon from '@mui/icons-material/TableChartTwoTone';
 import DisplaySettingsTwoToneIcon from '@mui/icons-material/DisplaySettingsTwoTone';
+import RssFeedIcon from '@mui/icons-material/RssFeed';
 
 const MenuWrapper = styled(Box)(
   ({ theme }) => `
@@ -222,6 +223,17 @@ function SidebarMenu() {
                   startIcon={<DisplaySettingsTwoToneIcon />}
                 >
                   Account
+                </Button>
+              </ListItem>
+              <ListItem component="div">
+                <Button
+                  disableRipple
+                  component={RouterLink}
+                  onClick={closeSidebar}
+                  to="/survey"
+                  startIcon={<RssFeedIcon />}
+                >
+                  Survey
                 </Button>
               </ListItem>
             </List>

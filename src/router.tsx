@@ -24,6 +24,7 @@ const Messenger = Loader(lazy(() => import('@/pages/Messenger')));
 const Blog = Loader(lazy(() => import('@/pages/Blog')));
 const UserSettings = Loader(lazy(() => import('@/pages/Users/settings')));
 const UserProfile = Loader(lazy(() => import('@/pages/Users/profile')));
+const Survey = Loader(lazy(() => import('@/pages/Survey')));
 
 // Components
 const Buttons = Loader(lazy(() => import('@/pages/Components/Buttons')));
@@ -57,6 +58,7 @@ const Router = () => {
             <Route path="messenger" element={<Messenger />} />
             <Route path="blog" element={<Blog />} />
             <Route path="user" element={<UserSettings />} />
+            <Route path="survey" element={<Survey />} />
             <Route path="profile">
               <Route path="" element={<Navigate to="details" replace />} />
               <Route path="details" element={<UserProfile />} />
